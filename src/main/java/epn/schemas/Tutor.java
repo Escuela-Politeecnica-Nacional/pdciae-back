@@ -1,5 +1,19 @@
 package epn.schemas;
 
-public class Tutor {
-    
+import epn.Enums.Rol;
+import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@NoArgsConstructor
+@Document(collection = "tutores")
+public class Tutor extends Usuario {
+
+	public Tutor(String id_usuario, String nombre, String apellido, String contraseña) {
+		super(id_usuario, nombre, apellido, Rol.TUTOR, contraseña);
+		setRolTutor();
+	}
+
+	private void setRolTutor() {
+		this.setRol(Rol.TUTOR);
+	}
 }
