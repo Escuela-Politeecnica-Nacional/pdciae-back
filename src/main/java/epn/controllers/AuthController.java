@@ -27,10 +27,10 @@ public class AuthController {
         if (token != null) {
             // Devolvemos el token en un JSON
             // return ResponseEntity.ok(Map.of("token", token));
-            return ResponseEntity.ok("Ingreso éxitoso");
+            return ResponseEntity.ok("Ingreso éxitoso" + "\n" + Map.of("token", token));
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                 .body("Credenciales incorrectas");
+                    .body("Credenciales incorrectas");
         }
     }
 }

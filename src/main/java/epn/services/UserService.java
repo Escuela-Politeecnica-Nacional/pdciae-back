@@ -2,12 +2,11 @@ package epn.services;
 
 import epn.Enums.Rol;
 import epn.repositories.AdminRepository;
-import epn.repositories.EstudianteRepository;
-import epn.repositories.TutorRepository;
 import epn.schemas.Admin;
 import epn.schemas.Usuario;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,12 +16,11 @@ import java.util.List;
 public class UserService {
 
     private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(
-            AdminRepository adminRepository,
-            EstudianteRepository estudianteRepository,
-            TutorRepository tutorRepository) {
+    public UserService(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
         this.adminRepository = adminRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<Admin> listarAdmins() {
@@ -35,8 +33,13 @@ public class UserService {
 
     public Admin crearAdmin(Admin admin) {
         if (adminRepository.existsByEmail(admin.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email" + admin.getEmail() + " ya está en uso.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email " + admin.getEmail() + " ya está en uso.");
         }
+
+        // Hashear password
+        String passwordHasheada = passwordEncoder.encode(admin.getPassword());
+        admin.setPassword(passwordHasheada);
+
         admin.setRol(Rol.ADMIN);
         return adminRepository.save(admin);
     }

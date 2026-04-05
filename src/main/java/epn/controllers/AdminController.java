@@ -7,8 +7,10 @@ import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admins")
@@ -31,20 +33,24 @@ public class AdminController {
         return userService.obtenerAdminPorId(id);
     }
 
-
     /*
-    TODO: Agregar JWT
-    */
+     * TODO: Agregar JWT
+     */
     @PostMapping
     public ResponseEntity<?> crear(@RequestBody Admin admin) {
         if (admin.getId_usuario() != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Datos involucrados son incorrectos");
         }
-        Admin creado = userService.crearAdmin(admin);
-        return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        try {
+            Admin creado = userService.crearAdmin(admin);
+            return ResponseEntity.status(HttpStatus.CREATED).body(creado);
+        } catch (ResponseStatusException e) {
+            return ResponseEntity.status(e.getStatusCode()).body(Map.of("error", e.getReason()));
+        }
+
     }
 
-    // TODO: Patch Nombre, apellido, contraseña. Por ultimo email 
+    // TODO: Patch Nombre, apellido, contraseña. Por ultimo email
     @PutMapping("/{id}")
     public Admin actualizar(@PathVariable String id, @RequestBody Admin admin) {
         return userService.actualizarAdmin(id, admin);
