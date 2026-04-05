@@ -21,8 +21,7 @@ public class UserService {
     public UserService(
             AdminRepository adminRepository,
             EstudianteRepository estudianteRepository,
-            TutorRepository tutorRepository
-    ) {
+            TutorRepository tutorRepository) {
         this.adminRepository = adminRepository;
     }
 
@@ -35,6 +34,9 @@ public class UserService {
     }
 
     public Admin crearAdmin(Admin admin) {
+        if (adminRepository.existsByEmail(admin.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El email" + admin.getEmail() + " ya está en uso.");
+        }
         admin.setRol(Rol.ADMIN);
         return adminRepository.save(admin);
     }
@@ -51,7 +53,8 @@ public class UserService {
         adminRepository.delete(existente);
     }
 
-    private <T extends Usuario> T findByIdOrThrow(MongoRepository<T, String> repository, String id, String notFoundMessage) {
+    private <T extends Usuario> T findByIdOrThrow(MongoRepository<T, String> repository, String id,
+            String notFoundMessage) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, notFoundMessage));
     }
