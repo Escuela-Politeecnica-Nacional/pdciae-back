@@ -8,8 +8,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "tutores")
 public class Tutor extends Usuario {
 
-	public Tutor(String id_usuario, String nombre, String apellido, String contraseña) {
-		super(id_usuario, nombre, apellido, Rol.TUTOR, contraseña);
+	public Tutor(String id_usuario, String email, String nombre, String apellido, String contraseña) {
+		super(id_usuario, email, nombre, apellido, Rol.TUTOR, contraseña);
 		setRolTutor();
 	}
 

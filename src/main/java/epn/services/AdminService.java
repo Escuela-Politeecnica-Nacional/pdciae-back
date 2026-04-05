@@ -34,9 +34,10 @@ public class AdminService {
 
     public Admin actualizar(String id, Admin adminActualizado) {
         Admin existente = obtenerPorId(id);
+        existente.setEmail(adminActualizado.getEmail());
         existente.setNombre(adminActualizado.getNombre());
         existente.setApellido(adminActualizado.getApellido());
-        existente.setContraseña(adminActualizado.getContraseña());
+        existente.setContrasena(adminActualizado.getContrasena());
         existente.setRol(Rol.ADMIN);
         return adminRepository.save(existente);
     }

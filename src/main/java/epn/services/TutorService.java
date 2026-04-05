@@ -34,9 +34,10 @@ public class TutorService {
 
     public Tutor actualizar(String id, Tutor tutorActualizado) {
         Tutor existente = obtenerPorId(id);
+        existente.setEmail(tutorActualizado.getEmail());
         existente.setNombre(tutorActualizado.getNombre());
         existente.setApellido(tutorActualizado.getApellido());
-        existente.setContraseña(tutorActualizado.getContraseña());
+        existente.setContrasena(tutorActualizado.getContrasena());
         existente.setRol(Rol.TUTOR);
         return tutorRepository.save(existente);
     }

@@ -34,9 +34,10 @@ public class EstudianteService {
 
     public Estudiante actualizar(String id, Estudiante estudianteActualizado) {
         Estudiante existente = obtenerPorId(id);
+        existente.setEmail(estudianteActualizado.getEmail());
         existente.setNombre(estudianteActualizado.getNombre());
         existente.setApellido(estudianteActualizado.getApellido());
-        existente.setContraseña(estudianteActualizado.getContraseña());
+        existente.setContrasena(estudianteActualizado.getContrasena());
         existente.setRol(Rol.ESTUDIANTE);
         return estudianteRepository.save(existente);
     }
