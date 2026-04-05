@@ -62,4 +62,9 @@ public class AdminController {
         userService.eliminarAdmin(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/")
+    public String healthCheck() {
+        return "API is running";
+    }
 }
