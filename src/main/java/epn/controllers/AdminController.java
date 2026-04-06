@@ -3,7 +3,11 @@ package epn.controllers;
 import epn.schemas.Admin;
 import epn.services.UserService;
 
-import org.springframework.context.annotation.Description;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +18,8 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admins")
+@Tag(name = "Administradores", description = "Endpoints para gestión de administradores")
+@SecurityRequirement(name = "Bearer JWT")
 public class AdminController {
 
     private final UserService userService;
@@ -23,20 +29,43 @@ public class AdminController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Listar administradores",
+            description = "Obtiene la lista completa de administradores registrados"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de administradores obtenida"),
+            @ApiResponse(responseCode = "401", description = "No autenticado - Token inválido o expirado")
+    })
     public List<Admin> listar() {
         return userService.listarAdmins();
     }
 
-    @Description("Usuario especifico de admin")
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Obtener administrador por ID",
+            description = "Trae los detalles de un administrador específico por su ID"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Administrador encontrado"),
+            @ApiResponse(responseCode = "404", description = "Administrador no encontrado"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
     public Admin obtenerPorId(@PathVariable String id) {
         return userService.obtenerAdminPorId(id);
     }
 
-    /*
-     * TODO: Agregar JWT
-     */
     @PostMapping
+    @Operation(
+            summary = "Crear nuevo administrador",
+            description = "Crea un nuevo administrador con email, nombre, apellido y contraseña"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Administrador creado exitosamente"),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos - ID debe ser null"),
+            @ApiResponse(responseCode = "409", description = "Conflicto - Email ya está en uso"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
     public ResponseEntity<?> crear(@RequestBody Admin admin) {
         if (admin.getId_usuario() != null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Datos involucrados son incorrectos");
@@ -50,14 +79,30 @@ public class AdminController {
 
     }
 
-    // TODO: Patch Nombre, apellido, contraseña. Por ultimo email
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Actualizar administrador",
+            description = "Actualiza los datos de un administrador (email, nombre, apellido, contraseña)"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Administrador actualizado"),
+            @ApiResponse(responseCode = "404", description = "Administrador no encontrado"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
     public Admin actualizar(@PathVariable String id, @RequestBody Admin admin) {
         return userService.actualizarAdmin(id, admin);
     }
 
-    // TODO: Borrado logico
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Eliminar administrador",
+            description = "Marca administrativamente como INACTIVO el administrador (borrado lógico)"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Administrador eliminado (marcado como INACTIVO)"),
+            @ApiResponse(responseCode = "404", description = "Administrador no encontrado"),
+            @ApiResponse(responseCode = "401", description = "No autenticado")
+    })
     public ResponseEntity<Void> eliminar(@PathVariable String id) {
         userService.eliminarAdmin(id);
         return ResponseEntity.noContent().build();

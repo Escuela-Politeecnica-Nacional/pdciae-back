@@ -1,5 +1,6 @@
 package epn.pdciae_back;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -17,8 +18,27 @@ public class PdciaeBackApplication {
 	};
 
 	public static void main(String[] args) {
+		// Cargar variables desde .env
+		loadEnvironmentVariables();
 		configureMongoUriFromEnvironment();
 		SpringApplication.run(PdciaeBackApplication.class, args);
+	}
+
+	private static void loadEnvironmentVariables() {
+		try {
+			Dotenv dotenv = Dotenv.configure()
+					.ignoreIfMissing()
+					.load();
+			
+			// Cargar todas las variables del .env a System.getenv()
+			dotenv.entries().forEach(entry -> 
+				System.setProperty(entry.getKey(), entry.getValue())
+			);
+			
+			System.out.println("[DotEnv] Variables cargadas desde .env");
+		} catch (Exception e) {
+			System.out.println("[DotEnv] No se encontró archivo .env, usando variables del sistema: " + e.getMessage());
+		}
 	}
 
 	private static void configureMongoUriFromEnvironment() {

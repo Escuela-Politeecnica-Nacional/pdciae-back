@@ -1,6 +1,7 @@
 package epn.pdciae_back.config;
 
 import epn.utils.JwtUtil;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,14 +31,21 @@ public class JwtFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7); // Quitar "Bearer "
             
-            // 2. Validar el token (Aquí deberías añadir un método validarToken en tu JwtUtil)
-            String email = jwtUtil.extraerEmail(token); // Necesitas este método en JwtUtil
+            try {
+                // 2. Validar el token y extraer email
+                String email = jwtUtil.extraerEmail(token);
 
-            if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                // 3. Si es válido, "autenticamos" al usuario en el contexto de Spring
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                        email, null, Collections.emptyList());
-                SecurityContextHolder.getContext().setAuthentication(auth);
+                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // 3. Si es válido, "autenticamos" al usuario en el contexto de Spring
+                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                            email, null, Collections.emptyList());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                }
+            } catch (JwtException e) {
+                // Token expirado, firmado incorrectamente o malformado
+                // Registrar el error y continuar (Spring Security rechazará la request después)
+                System.err.println("[JwtFilter] Error al validar JWT: " + e.getMessage());
+                // No establecer autenticación, dejando que Spring Security dé 401
             }
         }
 
