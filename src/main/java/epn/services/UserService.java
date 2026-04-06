@@ -54,7 +54,9 @@ public class UserService {
     @SuppressWarnings("null")
     public void eliminarAdmin(String id) {
         Admin existente = obtenerAdminPorId(id);
-        adminRepository.delete(existente);
+        // Borrado lógico: cambiar estado a INACTIVO en lugar de eliminar físicamente
+        existente.setEstado(epn.Enums.Estados.INACTIVO);
+        adminRepository.save(existente);
     }
 
     @SuppressWarnings("null")
@@ -68,6 +70,11 @@ public class UserService {
         existing.setEmail(updated.getEmail());
         existing.setNombre(updated.getNombre());
         existing.setApellido(updated.getApellido());
-        existing.setPassword(updated.getPassword());
+        
+        // Encriptar password si se proporciona
+        if (updated.getPassword() != null && !updated.getPassword().isBlank()) {
+            String passwordHasheada = passwordEncoder.encode(updated.getPassword());
+            existing.setPassword(passwordHasheada);
+        }
     }
 }
