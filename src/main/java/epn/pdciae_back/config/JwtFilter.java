@@ -1,4 +1,4 @@
-package epn.config;
+package epn.pdciae_back.config;
 
 import epn.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
