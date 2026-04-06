@@ -51,11 +51,13 @@ public class UserService {
         return adminRepository.save(existente);
     }
 
+    @SuppressWarnings("null")
     public void eliminarAdmin(String id) {
         Admin existente = obtenerAdminPorId(id);
         adminRepository.delete(existente);
     }
 
+    @SuppressWarnings("null")
     private <T extends Usuario> T findByIdOrThrow(MongoRepository<T, String> repository, String id,
             String notFoundMessage) {
         return repository.findById(id)

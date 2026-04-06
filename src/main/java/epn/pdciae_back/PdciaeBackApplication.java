@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-@SpringBootApplication(scanBasePackages = "epn")
+@SpringBootApplication(scanBasePackages = {"epn.pdciae_back", "epn.controllers", "epn.services", "epn.repositories", "epn.schemas", "epn.utils"})
 @EnableMongoRepositories(basePackages = "epn.repositories")
 public class PdciaeBackApplication {
 	private static final String[] MONGO_URI_ENV_KEYS = {

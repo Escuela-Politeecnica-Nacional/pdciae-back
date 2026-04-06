@@ -22,12 +22,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) 
+                .cors(cors -> cors.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // LOGIN ABIERTO
-                        .requestMatchers("/api/admins/**").authenticated() // ADMINS PROTEGIDO
-                        .anyRequest().authenticated())
-                // Añadimos nuestro filtro antes del filtro de usuario/contraseña de Spring
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/health").permitAll() // Agrega esto para Render
+                        .anyRequest().permitAll() // CAMBIO: temporalmente permitAll para validar el despliegue
+                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
